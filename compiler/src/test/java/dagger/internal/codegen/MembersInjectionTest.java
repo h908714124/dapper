@@ -31,46 +31,54 @@ class MembersInjectionTest {
   @Disabled
   @Test
   void parentClass_injectedMembersInSupertype() {
-    JavaFileObject childFile = JavaFileObjects.forSourceLines("test.Child",
-        "package test;",
-        "",
-        "import jakarta.inject.Inject;",
-        "",
-        "public final class Child extends Parent {",
-        "  @Inject Child() {}",
-        "}");
-    JavaFileObject parentFile = JavaFileObjects.forSourceLines("test.Parent",
-        "package test;",
-        "",
-        "import jakarta.inject.Inject;",
-        "",
-        "public abstract class Parent {",
-        "  @Inject Dep dep;",
-        "}");
-    JavaFileObject depFile = JavaFileObjects.forSourceLines("test.Dep",
-        "package test;",
-        "",
-        "import jakarta.inject.Inject;",
-        "",
-        "final class Dep {",
-        "  @Inject Dep() {}",
-        "}");
-    JavaFileObject componentFile = JavaFileObjects.forSourceLines("test.TestComponent",
-        "package test;",
-        "",
-        "import dagger.Component;",
-        "",
-        "@Component",
-        "interface TestComponent {",
-        "  Child child();",
-        "}");
+    JavaFileObject childFile =
+        JavaFileObjects.forSourceLines(
+            "test.Child",
+            "package test;",
+            "",
+            "import jakarta.inject.Inject;",
+            "",
+            "public final class Child extends Parent {",
+            "  @Inject Child() {}",
+            "}");
+    JavaFileObject parentFile =
+        JavaFileObjects.forSourceLines(
+            "test.Parent",
+            "package test;",
+            "",
+            "import jakarta.inject.Inject;",
+            "",
+            "public abstract class Parent {",
+            "  @Inject Dep dep;",
+            "}");
+    JavaFileObject depFile =
+        JavaFileObjects.forSourceLines(
+            "test.Dep",
+            "package test;",
+            "",
+            "import jakarta.inject.Inject;",
+            "",
+            "final class Dep {",
+            "  @Inject Dep() {}",
+            "}");
+    JavaFileObject componentFile =
+        JavaFileObjects.forSourceLines(
+            "test.TestComponent",
+            "package test;",
+            "",
+            "import dagger.Component;",
+            "",
+            "@Component",
+            "interface TestComponent {",
+            "  Child child();",
+            "}");
     JavaFileObject generatedComponent =
-        compilerMode.javaFileBuilder("test.DaggerTestComponent")
+        compilerMode
+            .javaFileBuilder("test.DaggerTestComponent")
+            .addLines("package test;")
+            .addLines(GeneratedLines.generatedAnnotations())
             .addLines(
-                "package test;")
-            .addLines(
-                GeneratedLines.generatedAnnotations())
-            .addLines("final class DaggerTestComponent implements TestComponent {",
+                "final class DaggerTestComponent implements TestComponent {",
                 "  private Child injectChild(Child instance) {",
                 "    Parent_MembersInjector.injectDep(instance, new Dep());",
                 "    return instance;",
@@ -94,30 +102,34 @@ class MembersInjectionTest {
 
   @Test
   void fieldInjection() {
-    JavaFileObject file = JavaFileObjects.forSourceLines("test.FieldInjection",
-        "package test;",
-        "",
-        "import dagger.Lazy;",
-        "import jakarta.inject.Inject;",
-        "import jakarta.inject.Provider;",
-        "",
-        "class FieldInjection {",
-        "  @Inject String string;",
-        "  @Inject Lazy<String> lazyString;",
-        "  @Inject Provider<String> stringProvider;",
-        "}");
+    JavaFileObject file =
+        JavaFileObjects.forSourceLines(
+            "test.FieldInjection",
+            "package test;",
+            "",
+            "import dagger.Lazy;",
+            "import jakarta.inject.Inject;",
+            "import jakarta.inject.Provider;",
+            "",
+            "class FieldInjection {",
+            "  @Inject String string;",
+            "  @Inject Lazy<String> lazyString;",
+            "  @Inject Provider<String> stringProvider;",
+            "}");
     JavaFileObject expected =
-        compilerMode.javaFileBuilder("test.FieldInjection_MembersInjector")
+        compilerMode
+            .javaFileBuilder("test.FieldInjection_MembersInjector")
+            .addLines("package test;")
             .addLines(
-                "package test;")
-            .addLines(GeneratedLines.generatedImports(
-                "import dagger.Lazy;",
-                "import dagger.MembersInjector;",
-                "import dagger.internal.DoubleCheck;",
-                "import dagger.internal.InjectedFieldSignature;",
-                "import jakarta.inject.Provider;"))
+                GeneratedLines.generatedImports(
+                    "import dagger.Lazy;",
+                    "import dagger.MembersInjector;",
+                    "import dagger.internal.DoubleCheck;",
+                    "import dagger.internal.InjectedFieldSignature;",
+                    "import jakarta.inject.Provider;"))
             .addLines(GeneratedLines.generatedAnnotations())
-            .addLines("public final class FieldInjection_MembersInjector implements MembersInjector<FieldInjection> {",
+            .addLines(
+                "public final class FieldInjection_MembersInjector implements MembersInjector<FieldInjection> {",
                 "  private final Provider<String> stringProvider;",
                 "  private final Provider<String> stringProvider2;",
                 "  private final Provider<String> stringProvider3;",
@@ -142,24 +154,24 @@ class MembersInjectionTest {
                 "  }",
                 "",
                 "  @InjectedFieldSignature(\"test.FieldInjection.string\")",
-                "  public static void injectString(Object instance, String string) {",
-                "    ((FieldInjection) instance).string = string;",
+                "  public static void injectString(FieldInjection instance, String string) {",
+                "    instance.string = string;",
                 "  }",
                 "",
                 "  @InjectedFieldSignature(\"test.FieldInjection.lazyString\")",
-                "  public static void injectLazyString(Object instance, Lazy<String> lazyString) {",
-                "    ((FieldInjection) instance).lazyString = lazyString;",
+                "  public static void injectLazyString(FieldInjection instance, Lazy<String> lazyString) {",
+                "    instance.lazyString = lazyString;",
                 "  }",
                 "",
                 "  @InjectedFieldSignature(\"test.FieldInjection.stringProvider\")",
-                "  public static void injectStringProvider(Object instance, Provider<String> stringProvider) {",
-                "    ((FieldInjection) instance).stringProvider = stringProvider;",
+                "  public static void injectStringProvider(FieldInjection instance,",
+                "      Provider<String> stringProvider) {",
+                "    instance.stringProvider = stringProvider;",
                 "  }",
-                "}").build();
+                "}")
+            .build();
 
-    Compilation compilation =
-        Compilers.compilerWithOptions(compilerMode.javacopts())
-            .compile(file);
+    Compilation compilation = Compilers.compilerWithOptions(compilerMode.javacopts()).compile(file);
 
     assertThat(compilation).succeeded();
     assertThat(compilation)
@@ -169,29 +181,31 @@ class MembersInjectionTest {
 
   @Test
   void methodInjection() {
-    JavaFileObject file = JavaFileObjects.forSourceLines("test.MethodInjection",
-        "package test;",
-        "",
-        "import dagger.Lazy;",
-        "import jakarta.inject.Inject;",
-        "import jakarta.inject.Provider;",
-        "",
-        "class MethodInjection {",
-        "  @Inject void noArgs() {}",
-        "  @Inject void oneArg(String string) {}",
-        "  @Inject void manyArgs(",
-        "      String string, Lazy<String> lazyString, Provider<String> stringProvider) {}",
-        "}");
+    JavaFileObject file =
+        JavaFileObjects.forSourceLines(
+            "test.MethodInjection",
+            "package test;",
+            "",
+            "import dagger.Lazy;",
+            "import jakarta.inject.Inject;",
+            "import jakarta.inject.Provider;",
+            "",
+            "class MethodInjection {",
+            "  @Inject void noArgs() {}",
+            "  @Inject void oneArg(String string) {}",
+            "  @Inject void manyArgs(",
+            "      String string, Lazy<String> lazyString, Provider<String> stringProvider) {}",
+            "}");
     JavaFileObject expected =
-        compilerMode.javaFileBuilder("test.MethodInjection_MembersInjector")
+        compilerMode
+            .javaFileBuilder("test.MethodInjection_MembersInjector")
+            .addLines("package test;", "")
             .addLines(
-                "package test;",
-                "")
-            .addLines(GeneratedLines.generatedImports(
-                "import dagger.Lazy;",
-                "import dagger.MembersInjector;",
-                "import dagger.internal.DoubleCheck;",
-                "import jakarta.inject.Provider;"))
+                GeneratedLines.generatedImports(
+                    "import dagger.Lazy;",
+                    "import dagger.MembersInjector;",
+                    "import dagger.internal.DoubleCheck;",
+                    "import jakarta.inject.Provider;"))
             .addLines(GeneratedLines.generatedAnnotations())
             .addLines(
                 "public final class MethodInjection_MembersInjector implements MembersInjector<MethodInjection> {",
@@ -221,23 +235,22 @@ class MembersInjectionTest {
                 "    injectManyArgs(instance, stringProvider2.get(), DoubleCheck.lazy(stringProvider3), stringProvider4);",
                 "  }",
                 "",
-                "  public static void injectNoArgs(Object instance) {",
-                "    ((MethodInjection) instance).noArgs();",
+                "  public static void injectNoArgs(MethodInjection instance) {",
+                "    instance.noArgs();",
                 "  }",
                 "",
-                "  public static void injectOneArg(Object instance, String string) {",
-                "    ((MethodInjection) instance).oneArg(string);",
+                "  public static void injectOneArg(MethodInjection instance, String string) {",
+                "    instance.oneArg(string);",
                 "  }",
                 "",
-                "  public static void injectManyArgs(Object instance, String string, Lazy<String> lazyString,",
-                "      Provider<String> stringProvider) {",
-                "    ((MethodInjection) instance).manyArgs(string, lazyString, stringProvider);",
+                "  public static void injectManyArgs(MethodInjection instance, String string,",
+                "      Lazy<String> lazyString, Provider<String> stringProvider) {",
+                "    instance.manyArgs(string, lazyString, stringProvider);",
                 "  }",
-                "}").build();
+                "}")
+            .build();
 
-    Compilation compilation =
-        Compilers.compilerWithOptions(compilerMode.javacopts())
-            .compile(file);
+    Compilation compilation = Compilers.compilerWithOptions(compilerMode.javacopts()).compile(file);
 
     assertThat(compilation).succeeded();
     assertThat(compilation)

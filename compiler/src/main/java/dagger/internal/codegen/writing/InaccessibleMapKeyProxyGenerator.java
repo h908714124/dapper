@@ -23,13 +23,13 @@ import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
 import dagger.internal.codegen.base.SourceFileGenerator;
+import dagger.internal.codegen.base.TopLevelType;
 import dagger.internal.codegen.binding.ContributionBinding;
 import dagger.internal.codegen.binding.MapKeys;
 import dagger.internal.codegen.collect.ImmutableList;
 import dagger.internal.codegen.xprocessing.XElement;
 import dagger.internal.codegen.xprocessing.XFiler;
 import dagger.internal.codegen.xprocessing.XProcessingEnv;
-import io.jbock.javapoet.TypeSpec;
 import jakarta.inject.Inject;
 
 /**
@@ -53,7 +53,7 @@ public final class InaccessibleMapKeyProxyGenerator
   }
 
   @Override
-  public ImmutableList<TypeSpec.Builder> topLevelTypes(ContributionBinding binding) {
+  public ImmutableList<TopLevelType> topLevelTypes(ContributionBinding binding) {
     return MapKeys.mapKeyFactoryMethod(binding, processingEnv)
         .map(
             method ->
@@ -61,6 +61,7 @@ public final class InaccessibleMapKeyProxyGenerator
                     .addModifiers(PUBLIC, FINAL)
                     .addMethod(constructorBuilder().addModifiers(PRIVATE).build())
                     .addMethod(method))
+        .map(TopLevelType::of)
         .map(ImmutableList::of)
         .orElse(ImmutableList.of());
   }

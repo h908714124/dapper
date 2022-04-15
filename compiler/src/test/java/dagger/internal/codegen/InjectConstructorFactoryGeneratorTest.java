@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.tools.JavaFileObject;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 // TODO(gak): add tests for generation in the default package.
@@ -982,36 +984,25 @@ final class InjectConstructorFactoryGeneratorTest {
         "    @Inject B(A a) {}",
         "  }",
         "}");
-    List<String> aFactory = new ArrayList<>();
-    Collections.addAll(aFactory,
+    List<String> bFactory = new ArrayList<>();
+    Collections.addAll(bFactory,
         "package test;");
-    Collections.addAll(aFactory,
+    Collections.addAll(bFactory,
         GeneratedLines.generatedImports("import dagger.internal.Factory;"));
-    Collections.addAll(aFactory,
+    Collections.addAll(bFactory,
         GeneratedLines.generatedAnnotations());
-    Collections.addAll(aFactory,
-        "public final class OuterType_A_Factory implements Factory<OuterType.A> {",
-        "  @Override",
-        "  public OuterType.A get() {",
-        "    return newInstance();",
-        "  }",
-        "",
-        "  public static OuterType_A_Factory create() {",
-        "    return InstanceHolder.INSTANCE;",
-        "  }",
-        "",
-        "  public static OuterType.A newInstance() {",
-        "    return new OuterType.A();",
-        "  }",
-        "",
-        "  private static final class InstanceHolder {",
-        "    private static final OuterType_A_Factory INSTANCE = new OuterType_A_Factory();",
-        "  }",
+    Collections.addAll(bFactory,
+        "public final class OuterType_B_Factory implements Factory<OuterType.B> {",
+            "  public static OuterType.B newInstance(OuterType.A a) {",
+            "    return new OuterType.B(a);",
+            "  }",
         "}");
-    assertAbout(javaSources()).that(List.of(nestedTypesFile))
-        .processedWith(new ComponentProcessor())
-        .compilesWithoutError()
-        .and()
-        .containsLines("test.OuterType_A_Factory", aFactory);
+
+    Compilation compilation =
+            compilerWithOptions(CompilerMode.DEFAULT_MODE)
+                    .compile(nestedTypesFile);
+    assertThat(compilation).succeeded();
+    assertThat(compilation).generatedSourceFile("test.OuterType_B_Factory")
+                    .containsLines(bFactory);
   }
 }

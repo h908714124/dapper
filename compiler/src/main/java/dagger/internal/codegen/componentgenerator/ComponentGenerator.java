@@ -17,13 +17,13 @@
 package dagger.internal.codegen.componentgenerator;
 
 import dagger.internal.codegen.base.SourceFileGenerator;
+import dagger.internal.codegen.base.TopLevelType;
 import dagger.internal.codegen.binding.BindingGraph;
 import dagger.internal.codegen.collect.ImmutableList;
 import dagger.internal.codegen.writing.ComponentImplementation;
 import dagger.internal.codegen.xprocessing.XElement;
 import dagger.internal.codegen.xprocessing.XFiler;
 import dagger.internal.codegen.xprocessing.XProcessingEnv;
-import io.jbock.javapoet.TypeSpec;
 import jakarta.inject.Inject;
 import java.util.Optional;
 
@@ -46,7 +46,7 @@ final class ComponentGenerator extends SourceFileGenerator<BindingGraph> {
   }
 
   @Override
-  public ImmutableList<TypeSpec.Builder> topLevelTypes(BindingGraph bindingGraph) {
+  public ImmutableList<TopLevelType> topLevelTypes(BindingGraph bindingGraph) {
     ComponentImplementation componentImplementation =
         topLevelImplementationComponentFactory
             .create(bindingGraph)
@@ -57,6 +57,6 @@ final class ComponentGenerator extends SourceFileGenerator<BindingGraph> {
             .parentRequirementExpressions(Optional.empty())
             .build()
             .componentImplementation();
-    return ImmutableList.of(componentImplementation.generate().toBuilder());
+    return ImmutableList.of(TopLevelType.of(componentImplementation.generate().toBuilder()));
   }
 }

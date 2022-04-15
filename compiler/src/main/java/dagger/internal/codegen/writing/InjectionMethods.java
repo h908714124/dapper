@@ -356,7 +356,7 @@ final class InjectionMethods {
     CAST_IF_NOT_PUBLIC, IGNORE;
 
     boolean useObjectType(XType instanceType) {
-      return this == CAST_IF_NOT_PUBLIC && !isRawTypePubliclyAccessible(instanceType);
+      return false;
     }
   }
 
@@ -476,6 +476,7 @@ final class InjectionMethods {
 
   private static CodeBlock copyParameter(
       MethodSpec.Builder methodBuilder, XType type, String name, boolean useObject) {
+    useObject = false;
     TypeName typeName = useObject ? TypeName.OBJECT : type.getTypeName();
     methodBuilder.addParameter(ParameterSpec.builder(typeName, name).build());
     return useObject ? CodeBlock.of("($T) $L", type.getTypeName(), name) : CodeBlock.of("$L", name);
@@ -486,6 +487,7 @@ final class InjectionMethods {
       UniqueNameSet parameterNameSet,
       XType type,
       boolean useObject) {
+    useObject = false;
     CodeBlock instance =
         copyParameter(methodBuilder, type, parameterNameSet.getUniqueName("instance"), useObject);
     // If we had to cast the instance add an extra parenthesis incase we're calling a method on it.

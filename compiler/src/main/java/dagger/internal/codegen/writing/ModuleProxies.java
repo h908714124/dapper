@@ -28,6 +28,7 @@ import static javax.lang.model.element.Modifier.STATIC;
 
 import dagger.internal.codegen.base.ModuleKind;
 import dagger.internal.codegen.base.SourceFileGenerator;
+import dagger.internal.codegen.base.TopLevelType;
 import dagger.internal.codegen.binding.SourceFiles;
 import dagger.internal.codegen.collect.ImmutableList;
 import dagger.internal.codegen.langmodel.Accessibility;
@@ -63,10 +64,10 @@ public final class ModuleProxies {
     }
 
     @Override
-    public ImmutableList<TypeSpec.Builder> topLevelTypes(XTypeElement moduleElement) {
+    public ImmutableList<TopLevelType> topLevelTypes(XTypeElement moduleElement) {
       ModuleKind.checkIsModule(moduleElement);
       return nonPublicNullaryConstructor(moduleElement).isPresent()
-          ? ImmutableList.of(buildProxy(moduleElement))
+          ? ImmutableList.of(TopLevelType.of(buildProxy(moduleElement)))
           : ImmutableList.of();
     }
 

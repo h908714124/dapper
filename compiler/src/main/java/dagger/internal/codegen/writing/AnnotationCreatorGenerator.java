@@ -29,6 +29,7 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.lang.model.element.Modifier.STATIC;
 
 import dagger.internal.codegen.base.SourceFileGenerator;
+import dagger.internal.codegen.base.TopLevelType;
 import dagger.internal.codegen.collect.ImmutableList;
 import dagger.internal.codegen.xprocessing.XElement;
 import dagger.internal.codegen.xprocessing.XFiler;
@@ -86,7 +87,7 @@ public class AnnotationCreatorGenerator extends SourceFileGenerator<XTypeElement
   }
 
   @Override
-  public ImmutableList<TypeSpec.Builder> topLevelTypes(XTypeElement annotationType) {
+  public ImmutableList<TopLevelType> topLevelTypes(XTypeElement annotationType) {
     ClassName generatedTypeName = getAnnotationCreatorClassName(annotationType);
     TypeSpec.Builder annotationCreatorBuilder =
         classBuilder(generatedTypeName)
@@ -97,7 +98,7 @@ public class AnnotationCreatorGenerator extends SourceFileGenerator<XTypeElement
       annotationCreatorBuilder.addMethod(buildCreateMethod(generatedTypeName, annotationElement));
     }
 
-    return ImmutableList.of(annotationCreatorBuilder);
+    return ImmutableList.of(TopLevelType.of(annotationCreatorBuilder));
   }
 
   private MethodSpec buildCreateMethod(

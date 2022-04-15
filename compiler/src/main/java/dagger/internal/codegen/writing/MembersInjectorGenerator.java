@@ -41,6 +41,7 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.lang.model.element.Modifier.STATIC;
 
 import dagger.internal.codegen.base.SourceFileGenerator;
+import dagger.internal.codegen.base.TopLevelType;
 import dagger.internal.codegen.base.UniqueNameSet;
 import dagger.internal.codegen.binding.FrameworkField;
 import dagger.internal.codegen.binding.MembersInjectionBinding;
@@ -87,7 +88,7 @@ public final class MembersInjectorGenerator extends SourceFileGenerator<MembersI
   }
 
   @Override
-  public ImmutableList<TypeSpec.Builder> topLevelTypes(MembersInjectionBinding binding) {
+  public ImmutableList<TopLevelType> topLevelTypes(MembersInjectionBinding binding) {
     // Empty members injection bindings are special and don't need source files.
     if (binding.injectionSites().isEmpty()) {
       return ImmutableList.of();
@@ -100,7 +101,6 @@ public final class MembersInjectorGenerator extends SourceFileGenerator<MembersI
         && assistedInjectedConstructors(binding.membersInjectedType()).isEmpty()) {
       return ImmutableList.of();
     }
-
 
     // We don't want to write out resolved bindings -- we want to write out the generic version.
     checkState(
@@ -212,7 +212,7 @@ public final class MembersInjectorGenerator extends SourceFileGenerator<MembersI
 
     gwtIncompatibleAnnotation(binding).ifPresent(injectorTypeBuilder::addAnnotation);
 
-    return ImmutableList.of(injectorTypeBuilder);
+    return ImmutableList.of(TopLevelType.of(injectorTypeBuilder));
   }
 
   private AnnotationSpec qualifierMetadataAnnotation(MembersInjectionBinding binding) {

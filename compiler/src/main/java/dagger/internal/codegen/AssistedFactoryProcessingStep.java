@@ -39,6 +39,7 @@ import static javax.lang.model.element.Modifier.STATIC;
 
 import dagger.internal.codegen.base.SourceFileGenerationException;
 import dagger.internal.codegen.base.SourceFileGenerator;
+import dagger.internal.codegen.base.TopLevelType;
 import dagger.internal.codegen.binding.AssistedInjectionAnnotations;
 import dagger.internal.codegen.binding.AssistedInjectionAnnotations.AssistedFactoryMetadata;
 import dagger.internal.codegen.binding.AssistedInjectionAnnotations.AssistedParameter;
@@ -261,7 +262,7 @@ final class AssistedFactoryProcessingStep extends TypeCheckingProcessingStep<XTy
     //   }
     // }
     @Override
-    public ImmutableList<TypeSpec.Builder> topLevelTypes(ProvisionBinding binding) {
+    public ImmutableList<TopLevelType> topLevelTypes(ProvisionBinding binding) {
       XTypeElement factory = asTypeElement(binding.bindingElement().get());
 
       ClassName name = generatedClassNameForBinding(binding);
@@ -328,7 +329,7 @@ final class AssistedFactoryProcessingStep extends TypeCheckingProcessingStep<XTy
                       name,
                       delegateFactoryParam)
                   .build());
-      return ImmutableList.of(builder);
+      return ImmutableList.of(TopLevelType.of(builder));
     }
 
     /** Returns the generated factory {@code TypeName type} for an @AssistedInject constructor. */
