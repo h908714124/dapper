@@ -16,12 +16,6 @@
 
 package dagger.internal.codegen.base;
 
-import static dagger.internal.codegen.base.Preconditions.checkNotNull;
-import static dagger.internal.codegen.javapoet.AnnotationSpecs.Suppression.RAWTYPES;
-import static dagger.internal.codegen.javapoet.AnnotationSpecs.Suppression.UNCHECKED;
-import static dagger.internal.codegen.xprocessing.XConverters.toJavac;
-import static dagger.internal.codegen.xprocessing.XElements.closestEnclosingTypeElement;
-
 import dagger.internal.codegen.collect.ImmutableList;
 import dagger.internal.codegen.collect.ImmutableSet;
 import dagger.internal.codegen.extension.DaggerStreams;
@@ -33,9 +27,15 @@ import dagger.internal.codegen.xprocessing.XMessager;
 import dagger.internal.codegen.xprocessing.XProcessingEnv;
 import io.jbock.javapoet.AnnotationSpec;
 import io.jbock.javapoet.JavaFile;
-import io.jbock.javapoet.TypeSpec;
+
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import static dagger.internal.codegen.base.Preconditions.checkNotNull;
+import static dagger.internal.codegen.javapoet.AnnotationSpecs.Suppression.RAWTYPES;
+import static dagger.internal.codegen.javapoet.AnnotationSpecs.Suppression.UNCHECKED;
+import static dagger.internal.codegen.xprocessing.XConverters.toJavac;
+import static dagger.internal.codegen.xprocessing.XElements.closestEnclosingTypeElement;
 
 /**
  * A template class that provides a framework for properly handling IO while generating source files
@@ -101,7 +101,8 @@ public abstract class SourceFileGenerator<T> {
             Stream.concat(warningSuppressions().stream(), Stream.of(UNCHECKED, RAWTYPES))
                 .collect(DaggerStreams.toImmutableSet())));
 
-    String packageName = closestEnclosingTypeElement(originatingElement).getPackageName();
+    String packageName = typeSpecBuilder.getPackageName()
+            .orElseGet(() -> closestEnclosingTypeElement(originatingElement).getPackageName());
     JavaFile.Builder javaFileBuilder =
         JavaFile.builder(packageName, typeSpecBuilder.getTypeSpec().build()).skipJavaLangImports(true);
     return javaFileBuilder.build();

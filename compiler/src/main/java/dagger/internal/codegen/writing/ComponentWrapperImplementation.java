@@ -17,12 +17,14 @@
 package dagger.internal.codegen.writing;
 
 import static dagger.internal.codegen.writing.ComponentNames.getTopLevelClassName;
+import static dagger.internal.codegen.xprocessing.XElements.closestEnclosingTypeElement;
 import static io.jbock.javapoet.MethodSpec.constructorBuilder;
 import static io.jbock.javapoet.TypeSpec.classBuilder;
 import static javax.lang.model.element.Modifier.FINAL;
 import static javax.lang.model.element.Modifier.PRIVATE;
 import static javax.lang.model.element.Modifier.PUBLIC;
 
+import dagger.internal.codegen.base.TopLevelType;
 import dagger.internal.codegen.base.UniqueNameSet;
 import dagger.internal.codegen.binding.BindingGraph;
 import dagger.internal.codegen.collect.ListMultimap;
@@ -81,7 +83,7 @@ public final class ComponentWrapperImplementation implements GeneratedImplementa
   }
 
   @Override
-  public TypeSpec generate() {
+  public TopLevelType generate() {
     TypeSpec.Builder builder =
         classBuilder(getTopLevelClassName(graph.componentDescriptor())).addModifiers(FINAL);
 
@@ -93,6 +95,8 @@ public final class ComponentWrapperImplementation implements GeneratedImplementa
     methodSpecsMap.asMap().values().forEach(builder::addMethods);
     typeSpecsMap.asMap().values().forEach(builder::addTypes);
 
-    return builder.addMethod(constructorBuilder().addModifiers(PRIVATE).build()).build();
+    return TopLevelType.of(
+        builder.addMethod(constructorBuilder().addModifiers(PRIVATE).build()),
+        closestEnclosingTypeElement(graph.componentTypeElement()).getPackageName());
   }
 }

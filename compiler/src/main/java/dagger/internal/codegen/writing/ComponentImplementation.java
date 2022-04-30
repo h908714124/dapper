@@ -33,6 +33,7 @@ import static dagger.internal.codegen.javapoet.CodeBlocks.parameterNames;
 import static dagger.internal.codegen.writing.ComponentImplementation.MethodSpecKind.COMPONENT_METHOD;
 import static dagger.internal.codegen.xprocessing.MethodSpecHelper.overriding;
 import static dagger.internal.codegen.xprocessing.XConverters.toJavac;
+import static dagger.internal.codegen.xprocessing.XElements.closestEnclosingTypeElement;
 import static dagger.internal.codegen.xprocessing.XElements.getSimpleName;
 import static io.jbock.javapoet.MethodSpec.constructorBuilder;
 import static io.jbock.javapoet.MethodSpec.methodBuilder;
@@ -45,6 +46,7 @@ import static javax.tools.Diagnostic.Kind.ERROR;
 
 import dagger.internal.Preconditions;
 import dagger.internal.codegen.base.ComponentCreatorKind;
+import dagger.internal.codegen.base.TopLevelType;
 import dagger.internal.codegen.base.UniqueNameSet;
 import dagger.internal.codegen.binding.Binding;
 import dagger.internal.codegen.binding.BindingGraph;
@@ -432,7 +434,7 @@ public final class ComponentImplementation {
   }
 
   /** Generates the component and returns the resulting {@code TypeSpec}. */
-  public TypeSpec generate() {
+  public TopLevelType generate() {
     return componentShard.generate();
   }
 
@@ -705,7 +707,7 @@ public final class ComponentImplementation {
     }
 
     @Override
-    public TypeSpec generate() {
+    public TopLevelType generate() {
       TypeSpec.Builder builder = classBuilder(name);
 
       if (isComponentShard()) {
@@ -740,7 +742,8 @@ public final class ComponentImplementation {
         return topLevelImplementation().generate();
       }
 
-      return builder.build();
+      return TopLevelType.of(builder, 
+              closestEnclosingTypeElement(graph.componentTypeElement()).getPackageName());
     }
 
     private ImmutableSet<Modifier> modifiers() {
@@ -887,7 +890,7 @@ public final class ComponentImplementation {
         topLevelImplementation()
             .addType(
                 TypeSpecKind.COMPONENT_IMPL,
-                childComponentImplementationFactory.create(subgraph).generate());
+                childComponentImplementationFactory.create(subgraph).generate().getTypeSpec().build());
       }
     }
 
@@ -896,7 +899,7 @@ public final class ComponentImplementation {
       for (ShardImplementation shard : ImmutableSet.copyOf(shardsByBinding.get().values())) {
         if (shardFieldsByImplementation.containsKey(shard)) {
           addField(FieldSpecKind.COMPONENT_SHARD_FIELD, shardFieldsByImplementation.get(shard));
-          TypeSpec shardTypeSpec = shard.generate();
+          TypeSpec shardTypeSpec = shard.generate().getTypeSpec().build();
           topLevelImplementation().addType(TypeSpecKind.COMPONENT_SHARD_TYPE, shardTypeSpec);
         }
       }

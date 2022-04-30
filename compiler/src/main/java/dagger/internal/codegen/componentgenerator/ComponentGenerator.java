@@ -57,6 +57,6 @@ final class ComponentGenerator extends SourceFileGenerator<BindingGraph> {
             .parentRequirementExpressions(Optional.empty())
             .build()
             .componentImplementation();
-    return ImmutableList.of(TopLevelType.of(componentImplementation.generate().toBuilder()));
+    return ImmutableList.of(componentImplementation.generate());
   }
 }

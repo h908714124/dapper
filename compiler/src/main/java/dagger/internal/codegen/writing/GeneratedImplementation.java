@@ -16,6 +16,7 @@
 
 package dagger.internal.codegen.writing;
 
+import dagger.internal.codegen.base.TopLevelType;
 import dagger.internal.codegen.writing.ComponentImplementation.FieldSpecKind;
 import dagger.internal.codegen.writing.ComponentImplementation.MethodSpecKind;
 import dagger.internal.codegen.writing.ComponentImplementation.TypeSpecKind;
@@ -42,5 +43,5 @@ public interface GeneratedImplementation {
   void addType(TypeSpecKind typeKind, TypeSpec typeSpec);
 
   /** Returns the {@code TypeSpec} for this generated implementation. */
-  public TypeSpec generate();
+  TopLevelType generate();
 }

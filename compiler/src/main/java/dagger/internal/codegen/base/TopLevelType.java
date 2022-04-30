@@ -17,6 +17,10 @@ public final class TopLevelType {
     return new TopLevelType(typeSpec, Optional.empty());
   }
 
+  public static TopLevelType of(TypeSpec.Builder typeSpec, String packageName) {
+    return new TopLevelType(typeSpec, Optional.of(packageName));
+  }
+
   public TypeSpec.Builder getTypeSpec() {
     return typeSpec;
   }

@@ -16,17 +16,16 @@
 
 package dagger.internal.codegen;
 
-import io.jbock.testing.compile.Compilation;
-import io.jbock.testing.compile.JavaFileObjects;
-import org.junit.jupiter.api.Test;
-
-import javax.tools.JavaFileObject;
-import java.util.ArrayList;
-import java.util.List;
-
 import static dagger.internal.codegen.CompilerMode.DEFAULT_MODE;
 import static dagger.internal.codegen.Compilers.compilerWithOptions;
 import static io.jbock.testing.compile.CompilationSubject.assertThat;
+
+import io.jbock.testing.compile.Compilation;
+import io.jbock.testing.compile.JavaFileObjects;
+import java.util.ArrayList;
+import java.util.List;
+import javax.tools.JavaFileObject;
+import org.junit.jupiter.api.Test;
 
 class SpaghettiTest {
 
@@ -90,9 +89,6 @@ class SpaghettiTest {
     assertThat(compilation)
         .generatedSourceFile("test.DaggerTestComponent")
         .containsLines(List.of(generatedComponent));
-//    assertThat(compilation)
-//            .generatedSourceFile("foo.bar.Aaa")
-//            .containsLines(List.of("class Aaa {"));
   }
 
   private JavaFileObject binding(String name, String dependency) {
